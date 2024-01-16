@@ -39,27 +39,27 @@ const questions = [
   {
     type: 'list',
     name: 'react_exp',
-    message: 'How would you rank your React.js experience?',
+    message: 'How would you rank your JavaScript experience?',
     choices,
   },
-  {
-    type: 'list',
-    name: 'node_exp',
-    message: 'How would you rank your Node.js experience?',
-    choices,
-  },
-  {
-    type: 'list',
-    name: 'sql_exp',
-    message: 'How would you rank your SQL experience?',
-    choices,
-  },
-  {
-    type: 'list',
-    name: 'devops_exp',
-    message: 'How would you rank your DevOps experience?',
-    choices,
-  },
+  // {
+  //   type: 'list',
+  //   name: 'node_exp',
+  //   message: 'How would you rank your Node.js experience?',
+  //   choices,
+  // },
+  // {
+  //   type: 'list',
+  //   name: 'sql_exp',
+  //   message: 'How would you rank your SQL experience?',
+  //   choices,
+  // },
+  // {
+  //   type: 'list',
+  //   name: 'devops_exp',
+  //   message: 'How would you rank your DevOps experience?',
+  //   choices,
+  // },
 ];
 
 inquirer.prompt(questions).then(async (answers) => {
