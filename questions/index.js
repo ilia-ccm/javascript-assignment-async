@@ -19,7 +19,6 @@ export function waitPromise(time) {
 */
 export async function promiseToAsync(promise) {
   // write code here
-  return await promise;
 }
 
 /*
