@@ -1,149 +1,264 @@
 import {
-  items,
-  uniq,
-  insertAtPosition,
-  getIndexedObject,
-  sumOfValuesMoreThanN,
-  promiseByComparison,
+  waitFor,
+  waitForAsync,
+  promiseToAsync,
+  promiseToAsyncHello,
+  waitPromise,
+  debounce,
+  tryCatch,
+  tryFetch,
 } from '../questions/index';
-import { isEqualArray } from '../_utils/array';
 
+async function timeout(t) {
+  await new Promise((r) => setTimeout(r, t));
+}
 
-describe('uniq', () => {
-  it('mixed', () => {
-    const input = [0, '0', 1, '2', 3, 4, 4, '4', '5', '5', '5'];
-    const expected = [0, '0', 1, '2', 3, 4, '4', '5'];
-    const actual = uniq(input);
-    expect(isEqualArray(expected, actual)).toBeTruthy();
-  });
-
-  it('ordered', () => {
-    const input = [5, 6, 7, 3, 4, 4, 4, 1, 4, 99, 4, 55, 2, 6, 6];
-    const expected = [5, 6, 7, 3, 4, 1, 99, 55, 2];
-    const actual = uniq(input);
-    expect(isEqualArray(expected, actual)).toBeTruthy();
-  });
-
-  it('no mutation', () => {
-    const input = [1, 1, 2, 3];
-    const actual = uniq(input);
-    expect(input).toEqual([1, 1, 2, 3]);
-    expect(actual).toEqual([1, 2, 3]);
-  });
-
-  it('large array', () => {
-    const input = [...Array(1000).keys()];
-    const expected = input;
-    const actual = uniq(input);
-    expect(isEqualArray(expected, actual)).toBeTruthy();
-  });
-});
-
-describe('insertAtPosition', () => {
-  it('insert', () => {
-    const actual = insertAtPosition(1, [0, 2, 3], 1);
-    const expected = [0, 1, 2, 3];
-    expect(actual).toEqual(expected);
-  });
-
-  it('no mutation', () => {
-    const list = [0, 2, 3];
-    const actual = insertAtPosition(1, list, 1);
-    expect(list).toEqual([0, 2, 3]);
-    expect(actual).toEqual([0, 1, 2, 3]);
-  });
-
-  it('length', () => {
-    const list = [0, 2, 3];
-    const actual = insertAtPosition(1, list, 3);
-    expect(actual).toEqual(list);
-  });
-
-  it('exists', () => {
-    const list = [0, 2, 3];
-    const actual = insertAtPosition(0, list, 1);
-    expect(actual).toEqual(list);
-
-    const listEmpty = [];
-    const actualEmpty = insertAtPosition(0, listEmpty, 1);
-    expect(actualEmpty).toEqual(listEmpty);
-  });
-});
-
-describe('getIndexedObject', () => {
-  it('base', () => {
-    const expected = {
-      'item 1': {
-        a: 'a prop1',
-        b: 'b prop1',
-      },
-      'item 2': {
-        a: 'a prop2',
-        b: 'b prop2',
-      },
-      'item 3': {
-        a: 'a prop3',
-        c: 'c prop3',
-      },
-      'item 4': {
-        a: 'a prop4',
-        b: 'c prop4',
-      },
-    };
-    const actual = getIndexedObject(items);
-    expect(JSON.stringify(actual)).toEqual(JSON.stringify(expected));
-    expect(Object.keys(actual).sort()).toEqual(['item 1', 'item 2', 'item 3', 'item 4']);
-  });
-});
-
-describe('sumOfValuesMoreThanN', () => {
-  it('base', () => {
-    const actual1 = sumOfValuesMoreThanN(items, 6);
-    const expected1 = [2, 3];
-    const actual2 = sumOfValuesMoreThanN(items, 5);
-    const expected2 = [1, 2, 3];
-    const actual3 = sumOfValuesMoreThanN(items, 100);
-    const expected3 = [];
-    const actual4 = sumOfValuesMoreThanN(items, 24);
-    const expected4 = [3];
-    const actual5 = sumOfValuesMoreThanN(items, 2);
-    const expected5 = [1, 2, 3, 4];
-
-    expect(actual1).toEqual(expected1);
-    expect(actual2).toEqual(expected2);
-    expect(actual3).toEqual(expected3);
-    expect(actual4).toEqual(expected4);
-    expect(actual5).toEqual(expected5);
-  });
-});
-
-describe('promiseByComparison', () => {
-  it('time', async () => {
+describe('waitPromise', () => {
+  it('0msec', async () => {
     jest.setTimeout(60000);
 
     const start = performance.now();
-    await promiseByComparison(2, 1, 2000);
+    expect(waitPromise(0)).resolves.toBeUndefined();
     const stop = performance.now();
 
-    expect(stop - start).toBeGreaterThanOrEqual(2000);
-    expect(stop - start).toBeLessThan(3000);
+    expect(stop - start).toBeGreaterThanOrEqual(0);
+    expect(stop - start).toBeLessThan(100);
   });
 
-  it('greater than', async () => {
+  it('500msec', async () => {
     jest.setTimeout(60000);
 
-    const actualA = await promiseByComparison(2, 1, 2000);
-    expect(actualA).toEqual('a is greater than b');
+    const start = performance.now();
+   await expect(waitPromise(500)).resolves.toBeUndefined();
+    const stop = performance.now();
 
-    const actualB = await promiseByComparison(1, 2, 2000);
-    expect(actualB).toEqual('b is greater than a');
+    expect(stop - start).toBeGreaterThanOrEqual(500);
+    expect(stop - start).toBeLessThan(600);
   });
 
-  it('equal', async () => {
+  it('1000msec', async () => {
     jest.setTimeout(60000);
-    const actualC = await promiseByComparison(1, 1, 2000);
-    expect(actualC).toEqual('a and b are equal');
+
+    const start = performance.now();
+    await expect(waitPromise(1000)).resolves.toBeUndefined();
+    const stop = performance.now();
+
+    expect(stop - start).toBeGreaterThanOrEqual(1000);
+    expect(stop - start).toBeLessThan(1100);
+  });
+
+  it('rejects', async () => {
+    jest.setTimeout(60000);
+
+    await expect(waitPromise(3000)).rejects.toBeUndefined();
   });
 });
 
+describe('promiseToAsync', () => {
+  it('fulfills', async () => {
+    jest.setTimeout(60000);
+    const promise = new Promise((res) => {
+      res('result');
+    });
 
+    const result = await promiseToAsync(promise);
+
+    expect(result).toBe('result');
+  });
+
+  it('rejects', async () => {
+    jest.setTimeout(60000);
+    const promise = new Promise((res, rej) => {
+      rej('failure');
+    });
+
+    expect(promiseToAsync(promise)).rejects.toBe('failure');
+  });
+});
+
+describe('promiseToAsyncHello', () => {
+  it('fulfills', async () => {
+    jest.setTimeout(60000);
+    const promise = new Promise((res) => {
+      res('result');
+    });
+
+    await expect(promiseToAsyncHello(promise)).resolves.toBe('result');
+  });
+
+  it('rejects', async () => {
+    jest.setTimeout(60000);
+    const promise = new Promise((res, rej) => {
+      rej('failure');
+    });
+
+    expect(promiseToAsyncHello(promise)).resolves.toBe('hello');
+  });
+});
+
+describe('waitForAsync', () => {
+  it('fulfills', async () => {
+    jest.setTimeout(60000);
+
+    const callTimes = [];
+    const f = function () {
+      callTimes.push(performance.now());
+    };
+
+    const start = performance.now();
+    await expect(waitForAsync(f)).resolves.toBeUndefined();
+
+    expect(callTimes.length).toBe(2);
+
+    expect(callTimes[0] - start).toBeGreaterThanOrEqual(0);
+    expect(callTimes[0] - start).toBeLessThan(100);
+
+    expect(callTimes[1] - start).toBeGreaterThanOrEqual(500);
+    expect(callTimes[1] - start).toBeLessThan(600);
+  });
+
+  it('rejects', async () => {
+    jest.setTimeout(60000);
+    const f = function () {
+      throw 'error';
+    };
+    await expect(waitForAsync(f)).rejects.toBe('error');
+  });
+});
+
+async function throwError() {
+  throw 'waitfor error';
+}
+
+describe('waitFor', () => {
+  it('fulfills', async () => {
+    jest.setTimeout(60000);
+
+    const callTimes = [];
+    let run = 1;
+    const f = async function () {
+      callTimes.push(performance.now());
+
+      switch (run++) {
+        case 1:
+          return 'Hello';
+        case 2:
+          return ' world!';
+        default:
+          console.log(3);
+          return ' OOOPS! You made a mistake!';
+      }
+    };
+
+    let result = null;
+    const cb = (res) => {
+      result = res;
+    };
+
+    const start = performance.now();
+    await expect(waitFor(f, cb)).toBeUndefined();
+    expect(callTimes.length).toBe(1);
+    expect(result).toBe(null);
+
+    await timeout(600);
+
+    expect(callTimes.length).toBe(2);
+
+    expect(callTimes[1] - start).toBeGreaterThanOrEqual(500);
+    expect(callTimes[1] - start).toBeLessThan(600);
+    expect(result).toBe('Hello world!');
+  });
+
+  it('rejects', async () => {
+    jest.setTimeout(60000);
+
+    let result = null;
+    const cb = (res) => {
+      result = res;
+    };
+
+    await expect(waitFor(throwError, cb)).toBeUndefined();
+    await timeout(600);
+    expect(result).toBe('');
+  });
+});
+
+describe('debounce', () => {
+  it('called once', async () => {
+    jest.setTimeout(60000);
+
+    const f = jest.fn();
+
+    const start = performance.now();
+    const debouncedFunc = debounce(f, 100);
+
+    expect(debouncedFunc.constructor.name).toBe('Function');
+
+    debouncedFunc(1);
+    debouncedFunc(2);
+    await timeout(300);
+
+    expect(f).toHaveBeenCalledTimes(1);
+    expect(f).toBeCalledWith(2);
+  });
+
+  it('called twice', async () => {
+    jest.setTimeout(60000);
+
+    const f = jest.fn();
+
+    const debouncedFunc = debounce(f, 100);
+    expect(f).toHaveBeenCalledTimes(0);
+
+    debouncedFunc(1);
+    await timeout(200);
+
+    expect(f).toHaveBeenCalledTimes(1);
+    expect(f).toBeCalledWith(1);
+
+    debouncedFunc(2);
+    await timeout(200);
+
+    expect(f).toHaveBeenCalledTimes(2);
+    expect(f).toBeCalledWith(2);
+  });
+});
+
+const throwsRangeError = () => {
+  throw new RangeError('Out of range');
+};
+
+describe('tryCatch', () => {
+  it('works ', async () => {
+    const f = () => 123;
+    expect(tryCatch(f)).toBe(123);
+  });
+
+  it('catches TypeError', async () => {
+    const f = () => null.abc();
+    expect(tryCatch(f)).toBe('hello');
+  });
+
+  it('re-throws', async () => {
+    await expect(() => tryCatch(throwsRangeError)).toThrow(RangeError);
+  });
+});
+
+// describe('tryFetch', () => {
+//   it('works ', async () => {
+//     const f = () => 123;
+//     expect(tryCatch(f)).toBe(123);
+//   });
+
+//   it('catches TypeError', async () => {
+//     const f = () => null.abc();
+//     expect(tryCatch(f)).toBe('hello');
+//   });
+
+//   it('re-throws', async () => {
+//     const f = () => {
+//       throw new RangeError('Out of range');
+//     };
+//     expect(()=>tryFetch(f)).toThrow(RangeError);
+//   });
+// });
