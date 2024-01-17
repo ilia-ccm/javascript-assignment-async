@@ -7,92 +7,64 @@
 */
 
 /*
-  uniq(arr): return a new array of unique values from 'arr'. 'arr' can contain strings and/or numbers.
+  waitPromise(time): Return a promise which resolves in `time`  when time less than 2000 msec. 
+  Reject right away if given time exceedes 2000 msec.
 */
-export function uniq(arr) {
+export function waitPromise(time) {
   // write code here
 }
 
 /*
-  insertAtPosition(element: number, list: number[], position: number): return a new array that inserts 
-  'element' at a given 'position' in 'list'. If the 'element' is already in the 'list' or if 'position'
-  is greater than the number of items in the 'list', don't insert it.
+  Use given promise result to return a value from async function
 */
-export function insertAtPosition(element, list, position) {
+export async function promiseToAsync(promise) {
   // write code here
+  return await promise;
 }
 
-/* 
-  This data structure will be referenced by the problems below as 'items'.
+/*
+  Use given promise result to return a value from async function. If rejected return 'hello'
 */
-export const items = [
-  {
-    name: 'item 1',
-    id: 1,
-    props: {
-      a: 'a prop1',
-      b: 'b prop1',
-    },
-    values: [1, 2, 3],
-  },
-  {
-    name: 'item 2',
-    id: 2,
-    props: {
-      a: 'a prop2',
-      b: 'b prop2',
-    },
-    values: [6, 1, 2, 3, 4],
-  },
-  {
-    name: 'item 3',
-    id: 3,
-    props: {
-      a: 'a prop3',
-      c: 'c prop3',
-    },
-    values: [10, 1, 2, 3, 4, 5],
-  },
-  {
-    name: 'item 4',
-    id: 4,
-    props: {
-      a: 'a prop4',
-      b: 'c prop4',
-    },
-    values: [1, 1, 1],
-  },
-  {
-    name: 'item 5',
-    id: 5,
-    values: [0, 0, 0],
-  },
-];
-
-/* 
-  getIndexedObject(items): return an object that is indexed by item's 'name' and contains all its 'props'.
-  Only index by key if 'props' exists for the item (no undefined).
-*/
-export function getIndexedObject(items) {
+export async function promiseToAsyncHello(promise) {
   // write code here
 }
 
 /*
-  sumOfValuesMoreThanN(items, n: number): return a new array of "id's" for each item in items if the sum
-  of all numbers in 'values' is more than 'n'.
+  f is an function. Debounce given function.  
+  Debouncing means you should wait delay msec before calling f and if it was 
+  called again during delay, delay time should be reset.
+  Don't forget about arguments.
 */
-export function sumOfValuesMoreThanN(items, n) {
+export function debounce(f, delay) {
   // write code here
 }
 
 /*
-  promiseByComparison(a: number, b: number, ms: number): return a promise that resolves within a specific
-  time which is supplied ('ms'). Compare the values of 'a' and 'b' and the resolves the promise to a
-   string of one of the following:
-    - "a is greater than b"
-    - "b is greater than a"
-    - "a and b are equal"
+  f is a function. Call it once immediately, wait 500 msec, call it again.
+  if f() rejects, re-throw an error
 */
-export function promiseByComparison(a, b, ms) {
+export async function waitForAsync(f) {
   // write code here
+}
+
+/*
+  f is an async function returning a string. 
+  Call it once immediately, wait 500 msec, call it again.
+  Concatenate call results and call a cb() callback with this string as a parameter
+  if f() throws an error, call cb with an empty string nothing
+*/
+export function waitFor(f, cb) {
+  // write code here
+}
+
+/*
+  Return f() result.
+  Return 'hello' string if f() throws a TypeError. Re-throw on all other errors. 
+*/
+export function tryCatch(f) {
+  try {
+    return f();
+  } catch (error) {
+    // write code here
+  }
 }
